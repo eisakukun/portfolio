@@ -26,6 +26,9 @@
   }
 
   *{box-sizing:border-box;margin:0;padding:0}
+  /* スマホで動画や画像が横幅を押し広げないようにする（これが無いと右が切れる） */
+  html,body{max-width:100%;overflow-x:hidden}
+  .feature>*,.duo figure,.f-media,.card,.grid>*{min-width:0}
   body{
     background:var(--bg);
     color:var(--text);
@@ -68,7 +71,7 @@
     text-transform:uppercase;margin-bottom:14px;
   }
   h1{
-    font-size:clamp(38px,6.6vw,74px);line-height:1.08;font-weight:800;
+    font-size:clamp(33px,6.6vw,74px);line-height:1.08;font-weight:800;
     letter-spacing:-.025em;margin-bottom:22px;
     text-shadow:0 4px 40px rgba(0,0,0,.55);
   }
@@ -136,6 +139,7 @@
   .card .emoji{font-size:30px;display:block;margin-bottom:14px}
   .card h3{font-size:18px;margin-bottom:8px;font-weight:700}
   .card p{font-size:14.5px;color:var(--muted)}
+  .card p strong{color:var(--text);font-weight:600}
   .badge{
     display:inline-block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
     padding:3px 10px;border-radius:999px;margin-bottom:12px;
@@ -144,6 +148,13 @@
   }
   .badge.wip{background:rgba(255,255,255,.05);color:var(--muted);border-color:var(--line)}
   .card .stack{margin-top:16px;font-size:11.5px;color:var(--dim);letter-spacing:.05em}
+
+  /* ===== 外部リンクのカード ===== */
+  .card .link{
+    display:inline-block;margin-top:14px;font-size:13px;
+    color:var(--accent2);letter-spacing:.03em;
+  }
+  .card:hover .link{color:var(--text)}
 
   /* ===== Interactive (two videos side by side) ===== */
   .sec-lead{color:var(--muted);max-width:760px;margin:-18px 0 40px}
@@ -187,6 +198,10 @@
     .feature.flip .f-media{order:0}
     .f-media{max-width:420px}
     .duo{grid-template-columns:1fr;gap:52px}
+    /* 縦画面だと動画が大きく切り取られるので、AIの人物側を寄せて見せる */
+    .hero-video{object-position:26% center}
+    .tags{gap:7px}
+    .tag{padding:5px 12px;font-size:12px}
   }
   @media (prefers-reduced-motion:reduce){
     *{animation:none !important;transition:none !important}
@@ -356,6 +371,19 @@
     <div class="grid">
 
       <!-- ▼ カードを増やすときは <a class="card"> ～ </a> をまるごとコピー -->
+      <a class="card reveal" href="https://www.instagram.com/reel/DNBCbHPSLU_/"
+         target="_blank" rel="noopener">
+        <span class="emoji">🎬</span>
+        <span class="badge">Published</span>
+        <h3>If YouTube Had Existed in 1945</h3>
+        <p>A vlog that could never have been filmed, generated with <strong>Google Flow
+           (Veo 3)</strong>. A young man walks a riverside street in Hiroshima and cheerfully
+           reports that life is back to normal. The clock in the corner reads 8:10, then 8:13.
+           The bomb fell at 8:15. Released on 6 August 2025, eighty years to the day.</p>
+        <div class="stack">Google Flow / Veo 3 / With @follow__your_soul</div>
+        <span class="link">Watch on Instagram ↗</span>
+      </a>
+
       <a class="card reveal" href="#">
         <span class="emoji">🕺</span>
         <span class="badge wip">In progress</span>
