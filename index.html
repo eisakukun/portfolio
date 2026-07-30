@@ -145,6 +145,25 @@
   .badge.wip{background:rgba(255,255,255,.05);color:var(--muted);border-color:var(--line)}
   .card .stack{margin-top:16px;font-size:11.5px;color:var(--dim);letter-spacing:.05em}
 
+  /* ===== Interactive (two videos side by side) ===== */
+  .sec-lead{color:var(--muted);max-width:760px;margin:-18px 0 40px}
+  .sec-lead strong{color:var(--text);font-weight:600}
+  .soundbtn{
+    display:inline-block;margin-left:8px;vertical-align:middle;
+    font:inherit;font-size:12.5px;cursor:pointer;
+    background:rgba(255,255,255,.04);color:var(--muted);
+    border:1px solid var(--line);border-radius:999px;padding:5px 14px;
+    transition:.2s ease;
+  }
+  .soundbtn:hover{color:var(--text);border-color:var(--accent)}
+  .soundbtn[aria-pressed="true"]{color:var(--accent2);border-color:rgba(0,224,198,.45)}
+  .duo{display:grid;grid-template-columns:1fr 1fr;gap:40px}
+  .duo figure{margin:0}
+  .duo figcaption{padding-top:20px}
+  .duo h3{font-size:22px;font-weight:800;letter-spacing:-.01em;margin-bottom:12px}
+  .duo p{color:var(--muted);font-size:15px}
+  .duo p strong{color:var(--text);font-weight:600}
+
   /* ===== About / Contact ===== */
   .about p{max-width:700px;color:var(--muted);margin-bottom:18px}
   .about strong{color:var(--text);font-weight:600}
@@ -167,6 +186,7 @@
     .feature{grid-template-columns:1fr;gap:24px;margin-bottom:72px}
     .feature.flip .f-media{order:0}
     .f-media{max-width:420px}
+    .duo{grid-template-columns:1fr;gap:52px}
   }
   @media (prefers-reduced-motion:reduce){
     *{animation:none !important;transition:none !important}
@@ -331,6 +351,61 @@
   </div>
 </section>
 
+<!-- ============ INTERACTIVE ============ -->
+<section>
+  <div class="wrap">
+    <h2>Interactive Installations</h2>
+    <p class="sec-lead">
+      A webcam, a projector, and a browser — both of these were written with
+      <strong>Claude Code</strong>. Nothing is installed on the wall side.
+      The room is the screen and the body is the controller.
+      <button id="sound" class="soundbtn" type="button" aria-pressed="false">🔇 Sound off</button>
+    </p>
+
+    <div class="duo">
+
+      <figure class="reveal">
+        <div class="f-media">
+          <video class="art" muted loop playsinline preload="none" controlsList="nodownload"
+                 poster="assets/harp-poster.jpg">
+            <source src="assets/harp.mp4" type="video/mp4">
+          </video>
+        </div>
+        <figcaption>
+          <h3>Light Harp</h3>
+          <p>
+            Strings of light are projected onto a wall. A camera watches the hand, and the
+            moment a finger crosses a string, the string <strong>bends away from it</strong>
+            and sounds a note — the bend you can see is the note being played.
+            There is no instrument in the room. Only light, a wall, and a hand.
+          </p>
+          <div class="f-stack">Hand tracking · Projection · Generative audio</div>
+        </figcaption>
+      </figure>
+
+      <figure class="reveal">
+        <div class="f-media">
+          <video class="art" muted loop playsinline preload="none" controlsList="nodownload"
+                 poster="assets/catch-poster.jpg">
+            <source src="assets/catch.mp4" type="video/mp4">
+          </video>
+        </div>
+        <figcaption>
+          <h3>Catch</h3>
+          <p>
+            The projection draws your own skeleton back onto you — wrist, elbow, shoulder,
+            tracked live. Small glowing characters drift across the cloth, and when a hand
+            reaches one it <strong>flips green</strong>. You are holding nothing:
+            the tracking of the body is the entire input.
+          </p>
+          <div class="f-stack">Pose tracking · Projection mapping · Browser</div>
+        </figcaption>
+      </figure>
+
+    </div>
+  </div>
+</section>
+
 <!-- ============ ABOUT ============ -->
 <section class="about">
   <div class="wrap">
@@ -378,6 +453,26 @@
   });
   // Safety net: show everything after 3s no matter what
   setTimeout(() => items.forEach(el => el.classList.add('on')), 3000);
+
+  // Installation videos: only load and play while they are on screen
+  const arts = document.querySelectorAll('video.art');
+  const vio = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      const v = e.target;
+      if (e.isIntersecting) { v.preload = 'auto'; v.play().catch(() => {}); }
+      else v.pause();
+    });
+  }, { threshold: 0.35 });
+  arts.forEach(v => vio.observe(v));
+
+  // Sound toggle (browsers only autoplay muted, so this has to be a click)
+  const btn = document.getElementById('sound');
+  btn.addEventListener('click', () => {
+    const turnOn = btn.getAttribute('aria-pressed') === 'false';
+    arts.forEach(v => { v.muted = !turnOn; });
+    btn.setAttribute('aria-pressed', String(turnOn));
+    btn.textContent = turnOn ? '🔊 Sound on' : '🔇 Sound off';
+  });
 </script>
 
 </body>
