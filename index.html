@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Real-time AI × Dance — Portfolio</title>
+<meta name="description" content="Real-time AI generation driven by my own movement. TouchDesigner, StreamDiffusion, ComfyUI, WebAR and web development.">
+
+<!-- SNSやLINEにURLを貼った時に出るカード -->
+<meta property="og:title" content="Real-time AI × Dance — Portfolio">
+<meta property="og:description" content="I dance, and AI regenerates me in real time.">
+<meta property="og:image" content="assets/hero-poster.jpg">
+<meta property="og:type" content="website">
+
+<style>
+  /* ===== Colors (change these to change the whole mood) ===== */
+  :root{
+    --bg:#0d0d12;
+    --card:#16161f;
+    --line:#26263a;
+    --text:#eceaf5;
+    --muted:#9b98b5;
+    --dim:#6f6c8c;
+    --accent:#7c5cff;
+    --accent2:#00e0c6;
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--text);
+    font-family:-apple-system,BlinkMacSystemFont,"Helvetica Neue",Arial,sans-serif;
+    line-height:1.75;
+    -webkit-font-smoothing:antialiased;
+  }
+  img,video{max-width:100%;display:block}
+  .wrap{max-width:1060px;margin:0 auto;padding:0 24px}
+
+  /* ===== Hero ===== */
+  .hero{
+    min-height:100svh;
+    display:flex;flex-direction:column;justify-content:flex-end;
+    position:relative;overflow:hidden;
+    padding-bottom:9vh;
+  }
+  .hero-video{
+    position:absolute;inset:0;
+    width:100%;height:100%;
+    object-fit:cover;object-position:center;
+    z-index:0;
+  }
+  .hero-scrim{
+    position:absolute;inset:0;z-index:1;pointer-events:none;
+    background:
+      linear-gradient(to top, var(--bg) 2%, rgba(13,13,18,.85) 26%, rgba(13,13,18,.15) 62%, rgba(13,13,18,.55) 100%),
+      linear-gradient(to right, rgba(13,13,18,.6), transparent 62%);
+  }
+  .hero .wrap{position:relative;z-index:2}
+  .scroll-cue{
+    position:absolute;bottom:20px;left:50%;transform:translateX(-50%);
+    z-index:2;color:var(--muted);font-size:11px;letter-spacing:.25em;
+    animation:bob 2.2s ease-in-out infinite;
+  }
+  @keyframes bob{0%,100%{transform:translate(-50%,0)}50%{transform:translate(-50%,7px)}}
+
+  .kicker{
+    color:var(--accent2);font-size:13px;letter-spacing:.22em;
+    text-transform:uppercase;margin-bottom:14px;
+  }
+  h1{
+    font-size:clamp(38px,6.6vw,74px);line-height:1.08;font-weight:800;
+    letter-spacing:-.025em;margin-bottom:22px;
+    text-shadow:0 4px 40px rgba(0,0,0,.55);
+  }
+  h1 .grad{
+    background:linear-gradient(100deg,var(--accent),var(--accent2));
+    -webkit-background-clip:text;background-clip:text;color:transparent;
+  }
+  .lead{
+    font-size:clamp(16px,2.1vw,19px);color:#c9c6de;max-width:660px;
+    text-shadow:0 2px 20px rgba(0,0,0,.6);
+  }
+  .lead strong{color:#fff;font-weight:700}
+
+  .tags{display:flex;flex-wrap:wrap;gap:9px;margin-top:26px}
+  .tag{
+    border:1px solid var(--line);border-radius:999px;
+    padding:6px 15px;font-size:12.5px;color:var(--muted);
+    background:rgba(13,13,18,.5);backdrop-filter:blur(6px);
+  }
+
+  /* ===== Section heading ===== */
+  section{padding:88px 0}
+  h2{
+    font-size:12px;letter-spacing:.26em;text-transform:uppercase;
+    color:var(--muted);margin-bottom:40px;
+    display:flex;align-items:center;gap:14px;
+  }
+  h2::after{content:"";flex:1;height:1px;background:var(--line)}
+
+  /* ===== Featured (big work blocks) ===== */
+  .feature{
+    display:grid;grid-template-columns:1fr 1fr;gap:44px;align-items:center;
+    margin-bottom:96px;
+  }
+  .feature:last-child{margin-bottom:0}
+  .feature.flip .f-media{order:2}
+  .f-media{
+    border-radius:18px;overflow:hidden;border:1px solid var(--line);
+    background:#000;line-height:0;
+  }
+  .f-media video,.f-media img{width:100%;height:auto}
+  /* 縦向きの動画は大きくなりすぎるので幅を抑える */
+  .f-media.portrait{max-width:400px;margin:0 auto}
+  .f-num{
+    font-size:12px;letter-spacing:.2em;color:var(--accent);margin-bottom:12px;
+  }
+  .feature h3{font-size:clamp(24px,3.2vw,34px);line-height:1.2;
+    font-weight:800;letter-spacing:-.02em;margin-bottom:16px}
+  .feature p{color:var(--muted);margin-bottom:14px}
+  .feature p strong{color:var(--text);font-weight:600}
+  .f-stack{
+    margin-top:20px;font-size:12px;color:var(--dim);letter-spacing:.06em;
+    padding-top:16px;border-top:1px solid var(--line);
+  }
+
+  /* ===== Work cards ===== */
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(290px,1fr));gap:20px}
+  .card{
+    background:var(--card);border:1px solid var(--line);border-radius:18px;
+    padding:26px;position:relative;overflow:hidden;
+    transition:transform .25s ease,border-color .25s ease;
+    text-decoration:none;color:inherit;display:block;
+  }
+  .card:hover{transform:translateY(-6px);border-color:var(--accent)}
+  .card .emoji{font-size:30px;display:block;margin-bottom:14px}
+  .card h3{font-size:18px;margin-bottom:8px;font-weight:700}
+  .card p{font-size:14.5px;color:var(--muted)}
+  .badge{
+    display:inline-block;font-size:10.5px;letter-spacing:.1em;text-transform:uppercase;
+    padding:3px 10px;border-radius:999px;margin-bottom:12px;
+    background:rgba(0,224,198,.12);color:var(--accent2);
+    border:1px solid rgba(0,224,198,.3);
+  }
+  .badge.wip{background:rgba(255,255,255,.05);color:var(--muted);border-color:var(--line)}
+  .card .stack{margin-top:16px;font-size:11.5px;color:var(--dim);letter-spacing:.05em}
+
+  /* ===== About / Contact ===== */
+  .about p{max-width:700px;color:var(--muted);margin-bottom:18px}
+  .about strong{color:var(--text);font-weight:600}
+  .contact a{
+    display:inline-block;margin-right:18px;margin-top:10px;
+    color:var(--text);text-decoration:none;font-size:17px;
+    border-bottom:1px solid var(--accent);padding-bottom:2px;
+  }
+  .contact a:hover{color:var(--accent2);border-color:var(--accent2)}
+
+  footer{padding:56px 0 80px;color:#5b5878;font-size:12.5px;text-align:center}
+
+  /* ===== Reveal on scroll (falls back to visible if JS is off) ===== */
+  .js .reveal{opacity:0;transform:translateY(24px);transition:.7s ease}
+  .js .reveal.on{opacity:1;transform:none}
+
+  /* ===== Mobile ===== */
+  @media (max-width:760px){
+    section{padding:64px 0}
+    .feature{grid-template-columns:1fr;gap:24px;margin-bottom:72px}
+    .feature.flip .f-media{order:0}
+    .f-media{max-width:420px}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none !important;transition:none !important}
+  }
+</style>
+</head>
+<body>
+
+<!-- ============ HERO ============ -->
+<header class="hero">
+  <!-- ▼ 見出しの動画。差し替えるなら assets/hero.mp4 を入れ替えるだけ -->
+  <video class="hero-video" autoplay muted loop playsinline preload="auto"
+         poster="assets/hero-poster.jpg">
+    <source src="assets/hero.mp4" type="video/mp4">
+  </video>
+  <div class="hero-scrim"></div>
+
+  <div class="wrap">
+    <p class="kicker">Real-time AI × Dance</p>
+    <!-- ▼ ここに自分の名前を入れる -->
+    <h1>I move.<br><span class="grad">The AI becomes me.</span></h1>
+    <p class="lead">
+      A live camera feed of my own dancing, regenerated frame by frame into
+      something else — <strong>while I am still dancing</strong>.
+      Nothing here is post-production. The generation runs in the same moment as the movement.
+    </p>
+    <div class="tags">
+      <span class="tag">TouchDesigner</span>
+      <span class="tag">StreamDiffusion</span>
+      <span class="tag">ComfyUI</span>
+      <span class="tag">Real-time generation</span>
+      <span class="tag">WebAR / 3D</span>
+      <span class="tag">Web development</span>
+      <span class="tag">Breakdance</span>
+    </div>
+  </div>
+  <div class="scroll-cue">SCROLL ↓</div>
+</header>
+
+<!-- ============ FEATURED ============ -->
+<section>
+  <div class="wrap">
+    <h2>Featured</h2>
+
+    <!-- Featured 01 : StreamDiffusion -->
+    <div class="feature reveal">
+      <div class="f-media portrait">
+        <video autoplay muted loop playsinline preload="metadata"
+               poster="assets/bts-poster.jpg">
+          <source src="assets/bts.mp4" type="video/mp4">
+        </video>
+      </div>
+      <div>
+        <p class="f-num">01</p>
+        <h3>Real-time AI Dance</h3>
+        <p>
+          A webcam watches me dance. <strong>StreamDiffusion</strong>, driven from
+          <strong>TouchDesigner</strong>, regenerates every frame into a different
+          body — a different face, a different material, a different creature —
+          and sends it straight back to the screen.
+        </p>
+        <p>
+          The hard part was never the image. It was the <strong>latency</strong>.
+          A generated frame that arrives late is no longer my movement, it is a memory
+          of it. Tuning the pipeline until the output lands close enough to follow my
+          own body is what makes this feel alive instead of rendered.
+        </p>
+        <p>
+          The clip here is it running in the room — one laptop, one camera, no render queue.
+        </p>
+        <div class="f-stack">TouchDesigner · StreamDiffusion · Live camera input</div>
+      </div>
+    </div>
+
+    <!-- Featured 02 : ComfyUI QR art -->
+    <div class="feature flip reveal">
+      <div class="f-media">
+        <img src="assets/qr-art.jpg" width="1024" height="1024"
+             alt="A woodblock-print style illustration of a woman in a floral kimono, generated on top of a working QR code">
+      </div>
+      <div>
+        <p class="f-num">02</p>
+        <h3>QR Code, Hidden in a Woodblock Print</h3>
+        <p>
+          Built in <strong>ComfyUI</strong>. The checkered pattern behind the figure is not
+          decoration — it is <strong>a real QR code</strong>. A QR-conditioned ControlNet holds
+          the light and dark cells in place while the diffusion model paints an
+          ukiyo-e style print on top of them: aged paper, a woman in a floral kimono,
+          a flower in her hair.
+        </p>
+        <p>
+          The interesting constraint is that the image has two jobs at once. It has to
+          read as a picture to a person, and as data to a phone camera. Push the style
+          too far and the code dies; hold back and it is just a QR code with a filter on it.
+          The whole craft is in that margin.
+        </p>
+        <p>
+          Same instinct as the piece above: give a machine a structure it has to respect,
+          then see how far the image can travel without breaking it.
+        </p>
+        <div class="f-stack">ComfyUI · Stable Diffusion · ControlNet (QR)</div>
+      </div>
+    </div>
+
+  </div>
+</section>
+
+<!-- ============ OTHER WORK ============ -->
+<section>
+  <div class="wrap">
+    <h2>Selected Work</h2>
+    <div class="grid">
+
+      <!-- ▼ カードを増やすときは <a class="card"> ～ </a> をまるごとコピー -->
+      <a class="card reveal" href="#">
+        <span class="emoji">🕺</span>
+        <span class="badge wip">In progress</span>
+        <h3>AR Breakdance</h3>
+        <p>Point a phone at a printed marker and a 3D character I built starts
+           dancing on top of it. Runs in the browser — no app to install.</p>
+        <div class="stack">WebAR / Three.js / Blender</div>
+      </a>
+
+      <a class="card reveal" href="#">
+        <span class="emoji">🗓️</span>
+        <span class="badge">Live</span>
+        <h3>shift-buddy</h3>
+        <p>A LINE agent that runs the staff schedule for a bar in Fukuoka.
+           It collects availability, builds the roster automatically, and sends it out.
+           In real weekly use.</p>
+        <div class="stack">LINE Messaging API / Scheduling solver</div>
+      </a>
+
+      <a class="card reveal" href="#">
+        <span class="emoji">🧠</span>
+        <span class="badge wip">In progress</span>
+        <h3>Mind Map App</h3>
+        <p>A mind map built for the way my own head branches — made to spread
+           thoughts out without losing any of them.</p>
+        <div class="stack">HTML / CSS / JavaScript</div>
+      </a>
+
+      <a class="card reveal" href="#">
+        <span class="emoji">🎯</span>
+        <span class="badge wip">In progress</span>
+        <h3>Purpose-First Map</h3>
+        <p>Starts at <em>why</em>, then walks down through <em>what to build</em>
+           and <em>how to solve it</em> — one layer at a time.</p>
+        <div class="stack">HTML / CSS / JavaScript</div>
+      </a>
+
+      <a class="card reveal" href="#">
+        <span class="emoji">📅</span>
+        <span class="badge wip">In progress</span>
+        <h3>Personal Calendar</h3>
+        <p>Weather, a weekly timeline and long-range bars on one screen.
+           Existing calendars never fit my head, so I rebuilt one that does.</p>
+        <div class="stack">Web / Weather API / AI suggestions</div>
+      </a>
+
+    </div>
+  </div>
+</section>
+
+<!-- ============ ABOUT ============ -->
+<section class="about">
+  <div class="wrap">
+    <h2>About</h2>
+    <p>
+      I am a <strong>b-boy who builds things</strong>. Breakdance, 3D, and writing the
+      code myself — not many people are standing in all three places at once, so that
+      intersection is what I work from.
+    </p>
+    <p>
+      What I am actually good at is spotting a specific annoyance in front of a specific
+      person and having something running the same day. I would rather move a rough version
+      and fix it by touching it than design the perfect one on paper.
+    </p>
+    <p>
+      Everything here was built for a real room — a bar, a studio, a massage clinic —
+      and used by real people. That is the part I care about.
+    </p>
+  </div>
+</section>
+
+<!-- ============ CONTACT ============ -->
+<section class="contact">
+  <div class="wrap">
+    <h2>Contact</h2>
+    <!-- ▼ リンク先を自分のものに書き換える -->
+    <a href="mailto:bboysian1@gmail.com">Email</a>
+    <a href="#">Instagram</a>
+    <a href="#">YouTube</a>
+    <a href="https://github.com/eisakukun">GitHub</a>
+  </div>
+</section>
+
+<footer>© 2026 — Everything I make ends up here.</footer>
+
+<script>
+  document.documentElement.classList.add('js');
+  const items = document.querySelectorAll('.reveal');
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => { if (e.isIntersecting) e.target.classList.add('on'); });
+  }, { threshold: 0.12 });
+  items.forEach((el, i) => {
+    el.style.transitionDelay = (i % 3) * 0.08 + 's';
+    io.observe(el);
+  });
+  // Safety net: show everything after 3s no matter what
+  setTimeout(() => items.forEach(el => el.classList.add('on')), 3000);
+</script>
+
+</body>
+</html>
