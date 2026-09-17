@@ -2,6 +2,16 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
+<script>
+  // 表示する言語を決める：URLの ?lang= → 前回選んだもの → ブラウザの言語
+  (function(){
+    var l = null;
+    try { l = new URLSearchParams(location.search).get('lang'); } catch(e){}
+    if (l !== 'ja' && l !== 'en') { try { l = localStorage.getItem('lang'); } catch(e){} }
+    if (l !== 'ja' && l !== 'en') { l = /^ja/i.test(navigator.language || '') ? 'ja' : 'en'; }
+    document.documentElement.lang = l;
+  })();
+</script>
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Real-time AI × Dance — Portfolio</title>
 <meta name="description" content="Real-time AI generation driven by my own movement. TouchDesigner, StreamDiffusion, ComfyUI, WebAR and web development.">
@@ -187,6 +197,28 @@
 
   footer{padding:56px 0 80px;color:#5b5878;font-size:12.5px;text-align:center}
 
+  /* ===== 英語 / 日本語の切り替え ===== */
+  html[lang="en"] [data-l="ja"],
+  html[lang="ja"] [data-l="en"]{display:none !important}
+  html[lang="ja"] body{
+    font-family:-apple-system,BlinkMacSystemFont,"Hiragino Sans","Hiragino Kaku Gothic ProN","Noto Sans JP","Yu Gothic",Meiryo,sans-serif;
+    line-height:1.9;word-break:auto-phrase;
+  }
+  html[lang="ja"] h1{letter-spacing:0;line-height:1.22}
+  html[lang="ja"] .feature h3,html[lang="ja"] .duo h3{letter-spacing:0;line-height:1.4}
+  .stack,.f-stack{overflow-wrap:anywhere}
+  .langsw{
+    position:fixed;top:16px;right:16px;z-index:50;display:flex;
+    border:1px solid var(--line);border-radius:999px;overflow:hidden;
+    background:rgba(13,13,18,.65);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  }
+  .langsw button{
+    font:inherit;font-size:12.5px;line-height:1;cursor:pointer;
+    background:none;border:0;color:var(--muted);padding:9px 14px;
+  }
+  .langsw button:hover{color:var(--text)}
+  .langsw button[aria-pressed="true"]{background:var(--accent);color:#fff}
+
   /* ===== Reveal on scroll (falls back to visible if JS is off) ===== */
   .js .reveal{opacity:0;transform:translateY(24px);transition:.7s ease}
   .js .reveal.on{opacity:1;transform:none}
@@ -210,6 +242,12 @@
 </head>
 <body>
 
+<!-- 英語 / 日本語 切り替え -->
+<div class="langsw" role="group" aria-label="Language">
+  <button type="button" data-set="en" aria-pressed="false">EN</button>
+  <button type="button" data-set="ja" aria-pressed="false">日本語</button>
+</div>
+
 <!-- ============ HERO ============ -->
 <header class="hero">
   <!-- ▼ 見出しの動画。差し替えるなら assets/hero.mp4 を入れ替えるだけ -->
@@ -220,22 +258,27 @@
   <div class="hero-scrim"></div>
 
   <div class="wrap">
-    <p class="kicker">Real-time AI × Dance</p>
+    <p class="kicker"><span data-l="en">Real-time AI × Dance</span><span data-l="ja">リアルタイムAI × ダンス</span></p>
     <!-- ▼ ここに自分の名前を入れる -->
-    <h1>I move.<br><span class="grad">The AI becomes me.</span></h1>
-    <p class="lead">
+    <h1 data-l="en">I move.<br><span class="grad">The AI becomes me.</span></h1>
+    <h1 data-l="ja">自分が動く。<br><span class="grad">AIが自分になる。</span></h1>
+    <p class="lead" data-l="en">
       A live camera feed of my own dancing, regenerated frame by frame into
       something else — <strong>while I am still dancing</strong>.
       Nothing here is post-production. The generation runs in the same moment as the movement.
+    </p>
+    <p class="lead" data-l="ja">
+      カメラに映る自分のダンスを、1コマずつ別の何かに描き直していく——<strong>まだ踊っているあいだに</strong>。
+      ここに後から編集したものはない。生成は、動きと同じ瞬間に走っている。
     </p>
     <div class="tags">
       <span class="tag">TouchDesigner</span>
       <span class="tag">StreamDiffusion</span>
       <span class="tag">ComfyUI</span>
-      <span class="tag">Real-time generation</span>
+      <span class="tag"><span data-l="en">Real-time generation</span><span data-l="ja">リアルタイム生成</span></span>
       <span class="tag">WebAR / 3D</span>
-      <span class="tag">Web development</span>
-      <span class="tag">Breakdance</span>
+      <span class="tag"><span data-l="en">Web development</span><span data-l="ja">Web開発</span></span>
+      <span class="tag"><span data-l="en">Breakdance</span><span data-l="ja">ブレイクダンス</span></span>
     </div>
   </div>
   <div class="scroll-cue">SCROLL ↓</div>
@@ -244,7 +287,7 @@
 <!-- ============ FEATURED ============ -->
 <section>
   <div class="wrap">
-    <h2>Featured</h2>
+    <h2><span data-l="en">Featured</span><span data-l="ja">注目作品</span></h2>
 
     <!-- Featured 01 : StreamDiffusion -->
     <div class="feature reveal">
@@ -256,23 +299,36 @@
       </div>
       <div>
         <p class="f-num">01</p>
-        <h3>Real-time AI Dance</h3>
-        <p>
+        <h3><span data-l="en">Real-time AI Dance</span><span data-l="ja">リアルタイムAIダンス</span></h3>
+        <p data-l="en">
           A webcam watches me dance. <strong>StreamDiffusion</strong>, driven from
           <strong>TouchDesigner</strong>, regenerates every frame into a different
           body — a different face, a different material, a different creature —
           and sends it straight back to the screen.
         </p>
-        <p>
+        <p data-l="en">
           The hard part was never the image. It was the <strong>latency</strong>.
           A generated frame that arrives late is no longer my movement, it is a memory
           of it. Tuning the pipeline until the output lands close enough to follow my
           own body is what makes this feel alive instead of rendered.
         </p>
-        <p>
+        <p data-l="en">
           The clip here is it running in the room — one laptop, one camera, no render queue.
         </p>
-        <div class="f-stack">TouchDesigner · StreamDiffusion · Live camera input</div>
+        <p data-l="ja">
+          Webカメラが自分のダンスを見ている。<strong>TouchDesigner</strong>から動かす
+          <strong>StreamDiffusion</strong>が、そのコマを1枚ずつ別の体——別の顔、別の質感、別の生き物——に描き直し、
+          そのまま画面へ返す。
+        </p>
+        <p data-l="ja">
+          難しかったのは絵ではなく、<strong>遅延</strong>だった。遅れて届いた1コマは、もう自分の動きではなく、
+          動きの記憶になってしまう。出力が自分の体についてこられるところまでパイプラインを詰めたことで、
+          「レンダリングされた映像」ではなく「生きているもの」に感じられるようになった。
+        </p>
+        <p data-l="ja">
+          この映像は、部屋で実際に動かしているところ。ノートPC1台、カメラ1台、レンダー待ちはなし。
+        </p>
+        <div class="f-stack">TouchDesigner · StreamDiffusion · <span data-l="en">Live camera input</span><span data-l="ja">ライブカメラ入力</span></div>
       </div>
     </div>
 
@@ -284,23 +340,36 @@
       </div>
       <div>
         <p class="f-num">02</p>
-        <h3>QR Code, Hidden in a Woodblock Print</h3>
-        <p>
+        <h3><span data-l="en">QR Code, Hidden in a Woodblock Print</span><span data-l="ja">浮世絵に隠したQRコード</span></h3>
+        <p data-l="en">
           Built in <strong>ComfyUI</strong>. The checkered pattern behind the figure is not
           decoration — it is <strong>a real QR code</strong>. A QR-conditioned ControlNet holds
           the light and dark cells in place while the diffusion model paints an
           ukiyo-e style print on top of them: aged paper, a woman in a floral kimono,
           a flower in her hair.
         </p>
-        <p>
+        <p data-l="en">
           The interesting constraint is that the image has two jobs at once. It has to
           read as a picture to a person, and as data to a phone camera. Push the style
           too far and the code dies; hold back and it is just a QR code with a filter on it.
           The whole craft is in that margin.
         </p>
-        <p>
+        <p data-l="en">
           Same instinct as the piece above: give a machine a structure it has to respect,
           then see how far the image can travel without breaking it.
+        </p>
+        <p data-l="ja">
+          <strong>ComfyUI</strong>で制作。人物の後ろの市松模様は飾りではなく、<strong>本物のQRコード</strong>だ。
+          QR用のControlNetが白と黒のマスの位置を押さえたまま、拡散モデルがその上に浮世絵風の一枚を描いていく。
+          古びた紙、花柄の着物の女性、髪に挿した一輪の花。
+        </p>
+        <p data-l="ja">
+          おもしろいのは、1枚の画像が2つの役目を同時に負っていること。人には絵として、スマホのカメラにはデータとして
+          読まれなければならない。画風を押しすぎるとコードが死に、控えすぎるとフィルターをかけただけのQRコードになる。
+          腕の見せどころは、そのあいだのわずかな余白にある。
+        </p>
+        <p data-l="ja">
+          上の作品と同じ発想だ。機械に「守らなければいけない構造」を与えて、それを壊さずに画像がどこまで遠くへ行けるかを見る。
         </p>
         <div class="f-stack">ComfyUI · Stable Diffusion · ControlNet (QR)</div>
       </div>
@@ -312,11 +381,13 @@
 <!-- ============ INTERACTIVE ============ -->
 <section>
   <div class="wrap">
-    <h2>Interactive Installations</h2>
+    <h2><span data-l="en">Interactive Installations</span><span data-l="ja">インタラクティブ・インスタレーション</span></h2>
     <p class="sec-lead">
-      A webcam, a projector, and a browser — both of these were written with
+      <span data-l="en">A webcam, a projector, and a browser — both of these were written with
       <strong>Claude Code</strong>. Nothing is installed on the wall side.
-      The room is the screen and the body is the controller.
+      The room is the screen and the body is the controller.</span>
+      <span data-l="ja">Webカメラとプロジェクター、そしてブラウザ。どちらも<strong>Claude Code</strong>で書いた。
+      壁の側には何も取り付けていない。部屋がスクリーンになり、体がコントローラーになる。</span>
       <button id="sound" class="soundbtn" type="button" aria-pressed="false">🔇 Sound off</button>
     </p>
 
@@ -330,14 +401,19 @@
           </video>
         </div>
         <figcaption>
-          <h3>Light Harp</h3>
-          <p>
+          <h3><span data-l="en">Light Harp</span><span data-l="ja">光のハープ</span></h3>
+          <p data-l="en">
             Strings of light are projected onto a wall. A camera watches the hand, and the
             moment a finger crosses a string, the string <strong>bends away from it</strong>
             and sounds a note — the bend you can see is the note being played.
             There is no instrument in the room. Only light, a wall, and a hand.
           </p>
-          <div class="f-stack">Hand tracking · Projection · Generative audio</div>
+          <p data-l="ja">
+            壁に光の弦を投影する。カメラが手を見ていて、指が弦を横切った瞬間、弦が<strong>指から逃げるようにたわみ</strong>、
+            音が鳴る。目に見えるそのたわみが、いま鳴っている音そのものだ。
+            部屋に楽器はない。あるのは光と壁と手だけ。
+          </p>
+          <div class="f-stack"><span data-l="en">Hand tracking · Projection · Generative audio</span><span data-l="ja">ハンドトラッキング · プロジェクション · 音の生成</span></div>
         </figcaption>
       </figure>
 
@@ -349,14 +425,19 @@
           </video>
         </div>
         <figcaption>
-          <h3>Catch</h3>
-          <p>
+          <h3><span data-l="en">Catch</span><span data-l="ja">キャッチ</span></h3>
+          <p data-l="en">
             The projection draws your own skeleton back onto you — wrist, elbow, shoulder,
             tracked live. Small glowing characters drift across the cloth, and when a hand
             reaches one it <strong>flips green</strong>. You are holding nothing:
             the tracking of the body is the entire input.
           </p>
-          <div class="f-stack">Pose tracking · Projection mapping · Browser</div>
+          <p data-l="ja">
+            投影が、あなた自身の骨格をあなたの上に描き返す。手首、ひじ、肩をリアルタイムで追っている。
+            布の上を小さな光るキャラクターが漂い、手が届くと<strong>緑に変わる</strong>。
+            手には何も持っていない。体の動きを追うこと、それ自体が入力のすべてだ。
+          </p>
+          <div class="f-stack"><span data-l="en">Pose tracking · Projection mapping · Browser</span><span data-l="ja">姿勢トラッキング · プロジェクションマッピング · ブラウザ</span></div>
         </figcaption>
       </figure>
 
@@ -367,67 +448,73 @@
 <!-- ============ OTHER WORK ============ -->
 <section>
   <div class="wrap">
-    <h2>Selected Work</h2>
+    <h2><span data-l="en">Selected Work</span><span data-l="ja">主な作品</span></h2>
     <div class="grid">
 
       <!-- ▼ カードを増やすときは <a class="card"> ～ </a> をまるごとコピー -->
       <a class="card reveal" href="https://www.instagram.com/reel/DNBCbHPSLU_/"
          target="_blank" rel="noopener">
         <span class="emoji">🎬</span>
-        <span class="badge">Published</span>
-        <h3>If YouTube Had Existed in 1945</h3>
-        <p>A vlog that could never have been filmed, generated with <strong>Google Flow
+        <span class="badge"><span data-l="en">Published</span><span data-l="ja">公開済み</span></span>
+        <h3><span data-l="en">If YouTube Had Existed in 1945</span><span data-l="ja">もし1945年にYouTubeがあったら</span></h3>
+        <p data-l="en">A vlog that could never have been filmed, generated with <strong>Google Flow
            (Veo 3)</strong>. A young man walks a riverside street in Hiroshima and cheerfully
            reports that life is back to normal. The clock in the corner reads 8:10, then 8:13.
            The bomb fell at 8:15. Released on 6 August 2025, eighty years to the day.</p>
-        <div class="stack">Google Flow / Veo 3 / With @follow__your_soul</div>
-        <span class="link">Watch on Instagram ↗</span>
+        <p data-l="ja">撮れるはずのなかったvlogを、<strong>Google Flow（Veo 3）</strong>で生成した。広島の川沿いの通りを歩く若い男性が、暮らしはもう元どおりだと明るく伝える。画面の隅の時計は8:10、そして8:13。原爆が落ちたのは8:15。ちょうど80年後の2025年8月6日に公開。</p>
+        <div class="stack"><span data-l="en">Google Flow / Veo 3 / With @follow__your_soul</span><span data-l="ja">Google Flow / Veo 3 / @follow__your_soul とのコラボ</span></div>
+        <span class="link"><span data-l="en">Watch on Instagram ↗</span><span data-l="ja">Instagramで見る ↗</span></span>
       </a>
 
       <a class="card reveal" href="#">
         <span class="emoji">🕺</span>
-        <span class="badge wip">In progress</span>
-        <h3>AR Breakdance</h3>
-        <p>Point a phone at a printed marker and a 3D character I built starts
+        <span class="badge wip"><span data-l="en">In progress</span><span data-l="ja">制作中</span></span>
+        <h3><span data-l="en">AR Breakdance</span><span data-l="ja">ARブレイクダンス</span></h3>
+        <p data-l="en">Point a phone at a printed marker and a 3D character I built starts
            dancing on top of it. Runs in the browser — no app to install.</p>
+        <p data-l="ja">印刷したマーカーにスマホを向けると、自作の3Dキャラクターがその上で踊りだす。ブラウザで動くので、アプリのインストールは不要。</p>
         <div class="stack">WebAR / Three.js / Blender</div>
       </a>
 
       <a class="card reveal" href="#">
         <span class="emoji">🗓️</span>
-        <span class="badge">Live</span>
-        <h3>shift-buddy</h3>
-        <p>A LINE agent that runs the staff schedule for a bar in Fukuoka.
+        <span class="badge"><span data-l="en">Live</span><span data-l="ja">運用中</span></span>
+        <h3><span data-l="en">shift-buddy</span><span data-l="ja">shift-buddy</span></h3>
+        <p data-l="en">A LINE agent that runs the staff schedule for a bar in Fukuoka.
            It collects availability, builds the roster automatically, and sends it out.
            In real weekly use.</p>
-        <div class="stack">LINE Messaging API / Scheduling solver</div>
+        <p data-l="ja">福岡のバーのスタッフのシフトを回すLINEエージェント。希望を集めて、シフト表を自動で組み、みんなに送る。毎週、実際に使われている。</p>
+        <div class="stack"><span data-l="en">LINE Messaging API / Scheduling solver</span><span data-l="ja">LINE Messaging API / シフト自動作成ソルバー</span></div>
       </a>
 
       <a class="card reveal" href="#">
         <span class="emoji">🧠</span>
-        <span class="badge wip">In progress</span>
-        <h3>Mind Map App</h3>
-        <p>A mind map built for the way my own head branches — made to spread
+        <span class="badge wip"><span data-l="en">In progress</span><span data-l="ja">制作中</span></span>
+        <h3><span data-l="en">Mind Map App</span><span data-l="ja">マインドマップアプリ</span></h3>
+        <p data-l="en">A mind map built for the way my own head branches — made to spread
            thoughts out without losing any of them.</p>
+        <p data-l="ja">自分の頭の枝分かれのしかたに合わせて作ったマインドマップ。考えを広げても、ひとつも取りこぼさないためのもの。</p>
         <div class="stack">HTML / CSS / JavaScript</div>
       </a>
 
       <a class="card reveal" href="#">
         <span class="emoji">🎯</span>
-        <span class="badge wip">In progress</span>
-        <h3>Purpose-First Map</h3>
-        <p>Starts at <em>why</em>, then walks down through <em>what to build</em>
+        <span class="badge wip"><span data-l="en">In progress</span><span data-l="ja">制作中</span></span>
+        <h3><span data-l="en">Purpose-First Map</span><span data-l="ja">目的ファーストマップ</span></h3>
+        <p data-l="en">Starts at <em>why</em>, then walks down through <em>what to build</em>
            and <em>how to solve it</em> — one layer at a time.</p>
+        <p data-l="ja"><em>なぜ</em>から始めて、<em>何を作るか</em>、<em>どう解決するか</em>へと、一層ずつ降りていく。</p>
         <div class="stack">HTML / CSS / JavaScript</div>
       </a>
 
       <a class="card reveal" href="#">
         <span class="emoji">📅</span>
-        <span class="badge wip">In progress</span>
-        <h3>Personal Calendar</h3>
-        <p>Weather, a weekly timeline and long-range bars on one screen.
+        <span class="badge wip"><span data-l="en">In progress</span><span data-l="ja">制作中</span></span>
+        <h3><span data-l="en">Personal Calendar</span><span data-l="ja">じぶんカレンダー</span></h3>
+        <p data-l="en">Weather, a weekly timeline and long-range bars on one screen.
            Existing calendars never fit my head, so I rebuilt one that does.</p>
-        <div class="stack">Web / Weather API / AI suggestions</div>
+        <p data-l="ja">天気、週のタイムライン、長い期間のバーを1画面に。既存のカレンダーはどれも頭に合わなかったので、合うものを作り直した。</p>
+        <div class="stack"><span data-l="en">Web / Weather API / AI suggestions</span><span data-l="ja">Web / 天気API / AIの提案</span></div>
       </a>
 
     </div>
@@ -437,20 +524,32 @@
 <!-- ============ ABOUT ============ -->
 <section class="about">
   <div class="wrap">
-    <h2>About</h2>
-    <p>
+    <h2><span data-l="en">About</span><span data-l="ja">プロフィール</span></h2>
+    <p data-l="en">
       I am a <strong>b-boy who builds things</strong>. Breakdance, 3D, and writing the
       code myself — not many people are standing in all three places at once, so that
       intersection is what I work from.
     </p>
-    <p>
+    <p data-l="en">
       What I am actually good at is spotting a specific annoyance in front of a specific
       person and having something running the same day. I would rather move a rough version
       and fix it by touching it than design the perfect one on paper.
     </p>
-    <p>
+    <p data-l="en">
       Everything here was built for a real room — a bar, a studio, a massage clinic —
       and used by real people. That is the part I care about.
+    </p>
+    <p data-l="ja">
+      <strong>ものを作るBボーイ</strong>。ブレイクダンス、3D、そして自分で書くコード。
+      この3つの場所に同時に立っている人はあまりいないので、その交差点を足場にしている。
+    </p>
+    <p data-l="ja">
+      本当に得意なのは、目の前の誰かの具体的な困りごとを見つけて、その日のうちに動くものを用意すること。
+      紙の上で完璧なものを設計するより、荒い版を動かして、触りながら直していきたい。
+    </p>
+    <p data-l="ja">
+      ここにあるものはどれも、実際の場所——バー、スタジオ、マッサージ院——のために作り、実際の人に使われてきた。
+      自分が大事にしているのは、そこだ。
     </p>
   </div>
 </section>
@@ -458,15 +557,15 @@
 <!-- ============ CONTACT ============ -->
 <section class="contact">
   <div class="wrap">
-    <h2>Contact</h2>
-    <a href="mailto:bboysian1@gmail.com">Email</a>
+    <h2><span data-l="en">Contact</span><span data-l="ja">連絡先</span></h2>
+    <a href="mailto:bboysian1@gmail.com"><span data-l="en">Email</span><span data-l="ja">メール</span></a>
     <a href="https://www.instagram.com/bboysian" target="_blank" rel="noopener">Instagram</a>
     <a href="https://www.youtube.com/@bboysian" target="_blank" rel="noopener">YouTube</a>
     <a href="https://github.com/eisakukun" target="_blank" rel="noopener">GitHub</a>
   </div>
 </section>
 
-<footer>© 2026 — Everything I make ends up here.</footer>
+<footer>© 2026 — <span data-l="en">Everything I make ends up here.</span><span data-l="ja">作ったものは、全部ここに置く。</span></footer>
 
 <script>
   document.documentElement.classList.add('js');
@@ -494,12 +593,37 @@
 
   // Sound toggle (browsers only autoplay muted, so this has to be a click)
   const btn = document.getElementById('sound');
+  const SOUND = { en: ['🔇 Sound off', '🔊 Sound on'], ja: ['🔇 音なし', '🔊 音あり'] };
+  const soundLabel = () => {
+    const on = btn.getAttribute('aria-pressed') === 'true';
+    btn.textContent = SOUND[document.documentElement.lang][on ? 1 : 0];
+  };
   btn.addEventListener('click', () => {
     const turnOn = btn.getAttribute('aria-pressed') === 'false';
     arts.forEach(v => { v.muted = !turnOn; });
     btn.setAttribute('aria-pressed', String(turnOn));
-    btn.textContent = turnOn ? '🔊 Sound on' : '🔇 Sound off';
+    soundLabel();
   });
+
+  // 英語 / 日本語 切り替え（選んだ言語はURLにも付くので、そのままリンクを送れる）
+  const TITLE = { en: 'Real-time AI × Dance — Portfolio', ja: 'リアルタイムAI × ダンス — ポートフォリオ' };
+  const langBtns = document.querySelectorAll('.langsw button');
+  function setLang(l, save) {
+    document.documentElement.lang = l;
+    document.title = TITLE[l];
+    langBtns.forEach(b => b.setAttribute('aria-pressed', String(b.dataset.set === l)));
+    soundLabel();
+    if (save) {
+      try { localStorage.setItem('lang', l); } catch (e) {}
+      try {
+        const u = new URL(location.href);
+        u.searchParams.set('lang', l);
+        history.replaceState(null, '', u);
+      } catch (e) {}
+    }
+  }
+  langBtns.forEach(b => b.addEventListener('click', () => setLang(b.dataset.set, true)));
+  setLang(document.documentElement.lang === 'ja' ? 'ja' : 'en', false);
 </script>
 
 </body>
